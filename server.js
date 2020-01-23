@@ -1,12 +1,16 @@
 const express = require("express");
 const dontenv = require("dotenv");
 const morgan = require("morgan");
-
-// Load Routes file
-const projects = require("./routes/projects");
+const connectDB = require("./config/db");
 
 // Load env variables
 dontenv.config({ path: "./config/config.env" });
+
+//Connect to database
+connectDB();
+
+// Load Routes file
+const projects = require("./routes/projects");
 
 const app = express();
 
@@ -19,9 +23,17 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/projects", projects);
 
 const PORT = process.env.PORT || 3000;
-app.listen(
+const server = app.listen(
   PORT,
   console.log(
     `Server running in ${process.env.NODE_ENV.toUpperCase()} mode on port ${PORT}`
   )
 );
+
+//Handle 'Unhandled Promise Rejections
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`Error: ${err.message}`);
+
+  //close Server & exit process
+  server.close(() => process.exit(1)); // 1 exit with failure status
+});
