@@ -2,7 +2,9 @@
 // @router  GET /api/v1/projects
 // @access  Public
 exports.getProjects = (req, res, next) => {
-  res.status(200).json({ success: true, msg: "Show all projects" });
+  res
+    .status(200)
+    .json({ success: true, msg: "Show all projects", hello: req.hello });
 };
 
 // @desc    GEt single Project
