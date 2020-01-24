@@ -1,3 +1,4 @@
+const errorResponse = require("../utils/errorResponse");
 const Project = require("../models/Project");
 // @desc    Get all Projects
 // @router  GET /api/v1/projects
@@ -23,15 +24,21 @@ exports.getProject = async (req, res, next) => {
     const project = await Project.findById(req.params.id);
 
     if (!project) {
-      return res.status(400).json({ success: false }); // return to avoid "header already set" Error
+      // return to avoid "header already set" Error
+      // formatted objectId but not found in db
+      return next(
+        new errorResponse(`Project not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({
       success: true,
       data: project
     });
   } catch (e) {
-    // res.status(400).json({ success: false });
-    next(e);
+    // Not a formatted objectId
+    next(
+      new errorResponse(`Project not found with id of ${req.params.id}`, 404)
+    );
   }
 };
 
