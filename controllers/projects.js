@@ -1,6 +1,5 @@
-const errorResponse = require("../utils/errorResponse");
+const ErrorResponse = require("../utils/ErrorResponse");
 const Project = require("../models/Project");
-// @desc    Get all Projects
 // @router  GET /api/v1/projects
 // @access  Public
 exports.getProjects = async (req, res, next) => {
@@ -12,7 +11,7 @@ exports.getProjects = async (req, res, next) => {
       data: projects
     });
   } catch (e) {
-    res.status(400).json({ success: false });
+    next(e);
   }
 };
 
@@ -27,7 +26,7 @@ exports.getProject = async (req, res, next) => {
       // return to avoid "header already set" Error
       // formatted objectId but not found in db
       return next(
-        new errorResponse(`Project not found with id of ${req.params.id}`, 404)
+        new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
       );
     }
     res.status(200).json({
@@ -36,9 +35,7 @@ exports.getProject = async (req, res, next) => {
     });
   } catch (e) {
     // Not a formatted objectId
-    next(
-      new errorResponse(`Project not found with id of ${req.params.id}`, 404)
-    );
+    next(e);
   }
 };
 
@@ -54,7 +51,7 @@ exports.createProject = async (req, res, next) => {
     });
   } catch (e) {
     console.log(`Error Message: ${e.errmsg} \nError Code: ${e.code}`);
-    res.status(400).json({ success: false });
+    next(e);
   }
 };
 // @desc    Update single Project
@@ -67,11 +64,13 @@ exports.updateProject = async (req, res, next) => {
       runValidators: true
     });
     if (!project) {
-      return res.status(400).json({ success: false });
+      return next(
+        new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: project });
   } catch (e) {
-    res.status(400).json({ success: false });
+    next(e);
   }
 };
 // @desc    Delete single Project
@@ -81,10 +80,12 @@ exports.deleteProject = async (req, res, next) => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id);
     if (!project) {
-      return res.status(400).json({ success: false });
+      return next(
+        new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, msg: "Document Deleted" });
   } catch (e) {
-    res.status(400).json({ success: false });
+    next(e);
   }
 };
