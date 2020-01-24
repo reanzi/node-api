@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const slugify = require("slugify");
+
 const ProjectSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -95,4 +97,11 @@ const ProjectSchema = new mongoose.Schema({
     default: Date.now()
   }
 });
+
+//Create Project Slug from a name
+ProjectSchema.pre("save", function(next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
 module.exports = mongoose.model("Project", ProjectSchema);
