@@ -2,6 +2,7 @@ const express = require("express");
 const dontenv = require("dotenv");
 const morgan = require("morgan");
 const colors = require("colors");
+const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
 
 // Load env variables
@@ -15,6 +16,9 @@ const projects = require("./routes/projects");
 
 const app = express();
 
+//Body Parser
+app.use(express.json());
+
 // Dev logging Middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -22,6 +26,7 @@ if (process.env.NODE_ENV === "development") {
 
 // Mount routers
 app.use("/api/v1/projects", projects);
+app.use(errorHandler); // must be used after the target middleware {example project}
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(
