@@ -30,7 +30,8 @@ exports.getProject = async (req, res, next) => {
       data: project
     });
   } catch (e) {
-    res.status(400).json({ success: false });
+    // res.status(400).json({ success: false });
+    next(e);
   }
 };
 
