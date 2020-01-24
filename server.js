@@ -15,6 +15,9 @@ const projects = require("./routes/projects");
 
 const app = express();
 
+//Body Parser
+app.use(express.json());
+
 // Dev logging Middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

@@ -40,11 +40,11 @@ const ProjectSchema = new mongoose.Schema({
     type: {
       type: String,
       enum: ["Point"],
-      required: true
+      required: false
     },
     coordinates: {
       type: [Number],
-      required: true,
+      required: false,
       index: "2dsphere"
     },
     formattedAddress: String,
@@ -60,6 +60,7 @@ const ProjectSchema = new mongoose.Schema({
     required: true,
     enum: [
       "Modern Agriculture",
+      "Agriculture Development",
       "Technologies",
       "Laws",
       "Renewable Energy",
