@@ -2,10 +2,19 @@ const ErrorResponse = require("../utils/ErrorResponse");
 const geocoder = require("../utils/geocoder");
 const Project = require("../models/Project");
 const asyncHandler = require("../middleware/asyncHandler");
+
+// desc      Get all projects
 // @router  GET /api/v1/projects
 // @access  Public
 exports.getProjects = asyncHandler(async (req, res, next) => {
-  const projects = await Project.find();
+  let query;
+  let queryStr = JSON.stringify(req.query);
+  queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`); //1st $ is money sign
+
+  console.log(queryStr);
+  query = Project.find(JSON.parse(queryStr));
+
+  const projects = await query;
   res.status(200).json({
     success: true,
     count: projects.length,
