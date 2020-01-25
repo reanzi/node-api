@@ -13,7 +13,7 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
   const reqQuery = { ...req.query };
 
   //Fields to exclude for matching
-  const removeFields = ["select", "sort"];
+  const removeFields = ["select", "sort", "limit", "page"];
 
   //Loop over removeFields and delete from req.query
   removeFields.forEach(param => delete reqQuery[param]);
@@ -41,11 +41,38 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
     query = query.sort("-createdAt");
   }
 
+  //Pagination
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+  const total = await Project.countDocuments();
+
+  query = query.skip(startIndex).limit(limit);
+
   //Excuting the query
   const projects = await query;
+
+  // Pagination Results
+  const pagination = {};
+
+  if (endIndex < total) {
+    pagination.next = {
+      page: page + 1,
+      limit
+    };
+  }
+  if (startIndex > 0) {
+    pagination.prev = {
+      page: page - 1,
+      limit
+    };
+  }
+  //Send Responses
   res.status(200).json({
     success: true,
     count: projects.length,
+    pagination,
     data: projects
   });
 });
