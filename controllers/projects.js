@@ -1,4 +1,5 @@
 const ErrorResponse = require("../utils/ErrorResponse");
+const geocoder = require("../utils/geocoder");
 const Project = require("../models/Project");
 const asyncHandler = require("../middleware/asyncHandler");
 // @router  GET /api/v1/projects
@@ -67,4 +68,31 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
     );
   }
   res.status(200).json({ success: true, msg: "Document Deleted" });
+});
+
+// @desc    Get projects within a radius
+// @router  DELETE /api/v1/projects/radius/:zipcode/:distance
+// @access  Private
+exports.getProjectsInRadius = asyncHandler(async (req, res, next) => {
+  const { zipcode, distance } = req.params;
+
+  //Get lat/lang from geocoder
+  const loc = await geocoder.geocode(zipcode);
+  const lat = loc[0].latitude;
+  const lng = loc[0].longitude;
+
+  //Calc radius using radius
+  //Divide distance by radius of earth
+  //Earth Radius = 3,963 mi /6,378 km
+
+  const radius = distance / 6378;
+  const projects = await Project.find({
+    location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
+  });
+
+  res.status(200).json({
+    success: true,
+    count: projects.length,
+    data: projects
+  });
 });
