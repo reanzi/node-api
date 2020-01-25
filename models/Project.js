@@ -68,6 +68,11 @@ const ProjectSchema = new mongoose.Schema({
       "Laws",
       "Renewable Energy",
       "Resources Management",
+      "Business",
+      "UI/UX",
+      "Web Development",
+      "Mobile Development",
+      "Data Science",
       "Others"
     ]
   },
