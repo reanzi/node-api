@@ -8,12 +8,40 @@ const asyncHandler = require("../middleware/asyncHandler");
 // @access  Public
 exports.getProjects = asyncHandler(async (req, res, next) => {
   let query;
-  let queryStr = JSON.stringify(req.query);
+
+  //copy req.query
+  const reqQuery = { ...req.query };
+
+  //Fields to exclude for matching
+  const removeFields = ["select", "sort"];
+
+  //Loop over removeFields and delete from req.query
+  removeFields.forEach(param => delete reqQuery[param]);
+
+  // Create Query String
+  let queryStr = JSON.stringify(reqQuery);
+
+  // Create operators ($lt, lte, gt, gte, in)
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`); //1st $ is money sign
 
-  console.log(queryStr);
+  //Finding Resource
   query = Project.find(JSON.parse(queryStr));
 
+  // Select Fields to return
+  if (req.query.select) {
+    const fields = req.query.select.split(",").join(" "); // create a array from the req.query with split and join into string
+    // console.log(fields);
+    query = query.select(fields);
+  }
+  //Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort("-createdAt");
+  }
+
+  //Excuting the query
   const projects = await query;
   res.status(200).json({
     success: true,
