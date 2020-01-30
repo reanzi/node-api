@@ -13,7 +13,10 @@ exports.getIdeas = asyncHandler(async (req, res, next) => {
   if (req.params.projectId) {
     query = Idea.find({ project: req.params.projectId });
   } else {
-    query = Idea.find();
+    query = Idea.find().populate({
+      path: "project",
+      select: "name description"
+    });
   }
   const ideas = await query;
 

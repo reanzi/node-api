@@ -25,9 +25,14 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`); //1st $ is money sign
 
   //Finding Resource
-  query = Project.find(JSON.parse(queryStr));
+  query = Project.find(JSON.parse(queryStr)).populate("ideas"); // populate with all idea's fields // populate with certain idea's fields
 
-  // Select Fields to return
+  /* // Select Fields to return
+  query = Project.find(JSON.parse(queryStr)).populate({
+    path: "ideas",
+    select: "title description"
+  }); */
+
   if (req.query.select) {
     const fields = req.query.select.split(",").join(" "); // create a array from the req.query with split and join into string
     // console.log(fields);
@@ -121,16 +126,19 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({ success: true, data: project });
 });
+
 // @desc    Delete single Project
 // @router  DELETE /api/v1/projects/:id
 // @access  Private
 exports.deleteProject = asyncHandler(async (req, res, next) => {
-  const project = await Project.findByIdAndDelete(req.params.id);
+  const project = await Project.findById(req.params.id);
   if (!project) {
     return next(
       new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
     );
   }
+
+  project.remove();
   res.status(200).json({ success: true, msg: "Document Deleted" });
 });
 
