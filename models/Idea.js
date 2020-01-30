@@ -14,11 +14,11 @@ const IdeaSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a number of weeks"]
   },
-  cost: {
+  tuition: {
     type: Number,
     required: [true, "Please add a cost"]
   },
-  skills: {
+  minimumSkill: {
     type: String,
     required: [true, "Please add skills neede"],
     enum: ["beginner", "intermediate", "advanced"]

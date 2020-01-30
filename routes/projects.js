@@ -8,7 +8,20 @@ const {
   getProjectsInRadius
 } = require("../controllers/projects");
 
+// Using Resources
+/**
+ * Include other Resources Routers
+ */
+
+const ideaRouter = require("./ideas");
+
 const router = express.Router();
+
+/**
+ * Re-route into other resource routers
+ */
+
+router.use("/:projectId/ideas", ideaRouter);
 
 // Routes
 router.route("/radius/:zipcode/:distance").get(getProjectsInRadius);
