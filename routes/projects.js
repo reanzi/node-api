@@ -5,7 +5,8 @@ const {
   createProject,
   updateProject,
   deleteProject,
-  getProjectsInRadius
+  getProjectsInRadius,
+  projectPhotoUpload
 } = require("../controllers/projects");
 
 // Using Resources
@@ -25,6 +26,7 @@ router.use("/:projectId/ideas", ideaRouter);
 
 // Routes
 router.route("/radius/:zipcode/:distance").get(getProjectsInRadius);
+router.route("/:id/photo").put(projectPhotoUpload);
 router
   .route("/")
   .get(getProjects)
