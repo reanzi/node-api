@@ -86,7 +86,7 @@ exports.getProjects = asyncHandler(async (req, res, next) => {
 // @router  GET /api/v1/projects/:id
 // @access  Public
 exports.getProject = asyncHandler(async (req, res, next) => {
-  const project = await Project.findById(req.params.id);
+  const project = await Project.findById(req.params.id).populate("ideas");
 
   if (!project) {
     // return to avoid "header already set" Error
