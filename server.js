@@ -13,6 +13,7 @@ connectDB();
 
 // Load Routes file
 const projects = require("./routes/projects");
+const ideas = require("./routes/ideas");
 
 const app = express();
 
@@ -26,9 +27,11 @@ if (process.env.NODE_ENV === "development") {
 
 // Mount routers
 app.use("/api/v1/projects", projects);
+app.use("/api/v1/ideas", ideas);
+
 app.use(errorHandler); // must be used after the target middleware {example project}
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const server = app.listen(
   PORT,
   console.log(
