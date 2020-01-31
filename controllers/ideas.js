@@ -70,3 +70,46 @@ exports.addIdea = asyncHandler(async (req, res, next) => {
     data: idea
   });
 });
+
+// desc      Upadte idea
+// @router  POST /api/v1//ideas/:id
+// @access  Private
+
+exports.updateIdea = asyncHandler(async (req, res, next) => {
+  let idea = await Idea.findById(req.params.id);
+  if (!idea) {
+    return next(
+      new ErrorResponse(`No Idea with the id of ${req.params.id}`),
+      404
+    );
+  }
+  idea = await Idea.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
+
+  res.status(200).json({
+    success: true,
+    data: idea
+  });
+});
+
+// desc      Delete idea
+// @router  POST /api/v1//ideas/:id
+// @access  Private
+
+exports.deleteIdea = asyncHandler(async (req, res, next) => {
+  const idea = await Idea.findById(req.params.id);
+  if (!idea) {
+    return next(
+      new ErrorResponse(`No Idea with the id of ${req.params.id}`),
+      404
+    );
+  }
+  await idea.remove();
+
+  res.status(200).json({
+    success: true,
+    data: ""
+  });
+});
