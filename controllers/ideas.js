@@ -9,23 +9,20 @@ const Project = require("../models/Project");
 // @access  Public
 
 exports.getIdeas = asyncHandler(async (req, res, next) => {
-  let query;
-
   if (req.params.projectId) {
-    query = Idea.find({ project: req.params.projectId });
-  } else {
-    query = Idea.find().populate({
-      path: "project",
-      select: "name description"
-    });
-  }
-  const ideas = await query;
+    const ideas = await Idea.find({ project: req.params.projectId });
 
-  res.status(200).json({
-    success: true,
-    count: ideas.length,
-    data: ideas
-  });
+    /**
+     * we return here because because pagination are not gonna be used for a single idea
+     */
+    return res.status(200).json({
+      success: true,
+      count: ideas.length,
+      data: ideas
+    });
+  } else {
+    res.status(200).json(res.advancedResults);
+  }
 });
 
 // desc      Get Single idea
