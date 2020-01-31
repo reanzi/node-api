@@ -9,6 +9,9 @@ const {
   projectPhotoUpload
 } = require("../controllers/projects");
 
+const Project = require("../models/Project");
+const advancedResults = require("../middleware/advancedResults");
+
 // Using Resources
 /**
  * Include other Resources Routers
@@ -29,7 +32,7 @@ router.route("/radius/:zipcode/:distance").get(getProjectsInRadius);
 router.route("/:id/photo").put(projectPhotoUpload);
 router
   .route("/")
-  .get(getProjects)
+  .get(advancedResults(Project, "ideas"), getProjects) // using advancedResults middleware
   .post(createProject);
 
 router
