@@ -143,9 +143,20 @@ exports.getProjectsInRadius = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.projectPhotoUpload = asyncHandler(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
+  // Make sure user is project exist
   if (!project) {
     return next(
       new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Make sure user is project owner
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this Project`,
+        401
+      )
     );
   }
 
