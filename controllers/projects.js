@@ -61,15 +61,28 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 // @router  PUT /api/v1/projects/:id
 // @access  Private
 exports.updateProject = asyncHandler(async (req, res, next) => {
-  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+  let project = await Project.findById(req.params.id, req.body);
   if (!project) {
     return next(
       new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // Make sure user is project owner
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this Project`,
+        401
+      )
+    );
+  }
+
+  // then update
+  project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
   res.status(200).json({ success: true, data: project });
 });
 
@@ -84,6 +97,16 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
     );
   }
 
+  //Make sure the user is the owner of a project or an Admin
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User with ID ${req.params.id} is not authorized to delete this Project`,
+        401
+      )
+    );
+  }
+  //then delete the project
   project.remove();
   res.status(200).json({ success: true, msg: "Document Deleted" });
 });

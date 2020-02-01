@@ -28,7 +28,7 @@ router
 router
   .route("/:id")
   .get(getIdea)
-  .put(protect, authorize("publisher"), updateIdea)
+  .put(protect, authorize("publisher", "admin"), updateIdea)
   .delete(protect, authorize("publisher", "admin"), deleteIdea);
 
 module.exports = router;

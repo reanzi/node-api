@@ -40,7 +40,7 @@ router
 router
   .route("/:id")
   .get(getProject)
-  .put(protect, authorize("publisher"), updateProject)
+  .put(protect, authorize("publisher", "admin"), updateProject)
   .delete(protect, authorize("publisher", "admin"), deleteProject);
 
 module.exports = router;
