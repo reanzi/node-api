@@ -13,7 +13,7 @@ const advancedResults = require("../middleware/advancedResults");
 const router = express.Router({ mergeParams: true });
 
 //Bring the protect Middleware
-const { protect } = require("../middleware/auth");
+const { protect, authorize } = require("../middleware/auth");
 
 router
   .route("/")
@@ -24,11 +24,11 @@ router
     }),
     getIdeas
   )
-  .post(protect, addIdea);
+  .post(protect, authorize("publisher", "admin"), addIdea);
 router
   .route("/:id")
   .get(getIdea)
-  .put(protect, updateIdea)
-  .delete(protect, deleteIdea);
+  .put(protect, authorize("publisher"), updateIdea)
+  .delete(protect, authorize("publisher", "admin"), deleteIdea);
 
 module.exports = router;
