@@ -35,6 +35,11 @@ const IdeaSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Project",
     required: true
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User", //model used
+    required: true
   }
 });
 

@@ -35,6 +35,22 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 // @router  POST /api/v1/projects
 // @access  Private
 exports.createProject = asyncHandler(async (req, res, next) => {
+  // Add user to req.body
+  req.body.user = req.user.id;
+
+  //Check for published project
+  const publishedProject = await Project.findOne({ user: req.user.id });
+
+  // If the user is not an Admin, they can only add only one project
+  if (publishedProject && req.user.role != "admin") {
+    return next(
+      new ErrorResponse(
+        `The user with ID ${req.user.id} has already submitted a project`,
+        400
+      )
+    );
+  }
+
   const project = await Project.create(req.body);
   res.status(201).json({
     success: true,
@@ -45,15 +61,28 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 // @router  PUT /api/v1/projects/:id
 // @access  Private
 exports.updateProject = asyncHandler(async (req, res, next) => {
-  const project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+  let project = await Project.findById(req.params.id, req.body);
   if (!project) {
     return next(
       new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // Make sure user is project owner
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this Project`,
+        401
+      )
+    );
+  }
+
+  // then update
+  project = await Project.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true
+  });
   res.status(200).json({ success: true, data: project });
 });
 
@@ -68,6 +97,16 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
     );
   }
 
+  //Make sure the user is the owner of a project or an Admin
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User with ID ${req.params.id} is not authorized to delete this Project`,
+        401
+      )
+    );
+  }
+  //then delete the project
   project.remove();
   res.status(200).json({ success: true, msg: "Document Deleted" });
 });
@@ -104,9 +143,20 @@ exports.getProjectsInRadius = asyncHandler(async (req, res, next) => {
 // @access  Private
 exports.projectPhotoUpload = asyncHandler(async (req, res, next) => {
   const project = await Project.findById(req.params.id);
+  // Make sure user is project exist
   if (!project) {
     return next(
       new ErrorResponse(`Project not found with id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Make sure user is project owner
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this Project`,
+        401
+      )
     );
   }
 

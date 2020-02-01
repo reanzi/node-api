@@ -52,6 +52,7 @@ exports.getIdea = asyncHandler(async (req, res, next) => {
 
 exports.addIdea = asyncHandler(async (req, res, next) => {
   req.body.project = req.params.projectId;
+  req.body.user = req.user.id;
 
   const project = await Project.findById(req.params.projectId);
   if (!project) {
@@ -60,6 +61,17 @@ exports.addIdea = asyncHandler(async (req, res, next) => {
       404
     );
   }
+
+  //make sure the logged in user is the Project owner
+  if (project.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to add an Idea to Project [ ${project.name} ]`,
+        401
+      )
+    );
+  }
+
   const idea = await Idea.create(req.body);
 
   res.status(200).json({
@@ -80,10 +92,16 @@ exports.updateIdea = asyncHandler(async (req, res, next) => {
       404
     );
   }
-  idea = await Idea.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+  //make sure the logged in user is the Idea owner or admin
+  if (idea.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to update this idea [ ${idea.title}]`,
+        401
+      )
+    );
+  }
+  idea = await Idea.findByIdAndUpdate(req.params.id, req.body);
 
   res.status(200).json({
     success: true,
@@ -101,6 +119,15 @@ exports.deleteIdea = asyncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`No Idea with the id of ${req.params.id}`),
       404
+    );
+  }
+  //make sure the logged in user is the Idea owner or admin
+  if (idea.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to Delete this  idea [ ${idea.title}]`,
+        401
+      )
     );
   }
   await idea.remove();
