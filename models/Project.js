@@ -141,7 +141,7 @@ ProjectSchema.pre("save", async function(next) {
  * Cascade delete Ideas when a Project is deleted
  */
 ProjectSchema.pre("remove", async function(next) {
-  console.log(`Ideas being removed from Project ${this._id}`);
+  console.log(`Included Ideas being removed from Project "${this.name}"`);
   await this.model("Idea").deleteMany({ project: this._id });
   next();
 });

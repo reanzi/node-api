@@ -4,6 +4,7 @@ const dontenv = require("dotenv");
 const morgan = require("morgan");
 const colors = require("colors");
 const fileupload = require("express-fileupload");
+const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
 
@@ -16,6 +17,7 @@ connectDB();
 // Load Routes file
 const projects = require("./routes/projects");
 const ideas = require("./routes/ideas");
+const auth = require("./routes/auth");
 
 const app = express();
 
@@ -24,6 +26,7 @@ const app = express();
  */
 //Body Parser
 app.use(express.json());
+app.use(cookieParser());
 
 // Dev logging Middleware
 if (process.env.NODE_ENV === "development") {
@@ -39,6 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Mount routers
 app.use("/api/v1/projects", projects);
 app.use("/api/v1/ideas", ideas);
+app.use("/api/v1/auth", auth);
 
 app.use(errorHandler); // must be used after the target middleware {example project}
 
