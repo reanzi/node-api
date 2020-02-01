@@ -35,6 +35,22 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 // @router  POST /api/v1/projects
 // @access  Private
 exports.createProject = asyncHandler(async (req, res, next) => {
+  // Add user to req.body
+  req.body.user = req.user.id;
+
+  //Check for published project
+  const publishedProject = await Project.findOne({ user: req.user.id });
+
+  // If the user is not an Admin, they can only add only one project
+  if (publishedProject && req.user.role != "admin") {
+    return next(
+      new ErrorResponse(
+        `The user with ID ${req.user.id} has already submitted a project`,
+        400
+      )
+    );
+  }
+
   const project = await Project.create(req.body);
   res.status(201).json({
     success: true,

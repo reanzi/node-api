@@ -7,12 +7,12 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config/config.env" });
 
 //Load Models
-
 const Project = require("./models/Project");
 const Idea = require("./models/Idea");
+const User = require("./models/User");
 
 //Connect to DB
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(process.env.MONGO_URI_LOCAL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
@@ -33,11 +33,19 @@ const ideas = JSON.parse(
     "utf-8"
   )
 );
+
+const users = JSON.parse(
+  fs.readFileSync(
+    `${__dirname}/resources/devcamper_project_resources/_data/users.json`,
+    "utf-8"
+  )
+);
 // import into db
 const importData = async () => {
   try {
     await Project.create(projects);
     await Idea.create(ideas);
+    await User.create(users);
     console.log("Data Imported ....".green.inverse);
     process.exit();
   } catch (e) {
@@ -50,6 +58,7 @@ const deleteData = async () => {
   try {
     await Project.deleteMany();
     await Idea.deleteMany();
+    await User.deleteMany();
     console.log("Data Destroyed ....".red.inverse);
     process.exit();
   } catch (e) {
