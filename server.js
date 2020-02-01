@@ -16,6 +16,7 @@ connectDB();
 // Load Routes file
 const projects = require("./routes/projects");
 const ideas = require("./routes/ideas");
+const auth = require("./routes/auth");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // Mount routers
 app.use("/api/v1/projects", projects);
 app.use("/api/v1/ideas", ideas);
+app.use("/api/v1/auth", auth);
 
 app.use(errorHandler); // must be used after the target middleware {example project}
 
