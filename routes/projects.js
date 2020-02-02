@@ -16,6 +16,7 @@ const Project = require("../models/Project");
  * Include other Resources Routers
  */
 const ideaRouter = require("./ideas");
+const reviewRouter = require("./reviews");
 
 const router = express.Router();
 
@@ -24,8 +25,10 @@ const advancedResults = require("../middleware/advancedResults");
 const { protect, authorize } = require("../middleware/auth");
 /**
  * Re-route into other resource routers
+ * {{url}}/api/v1/projects/:projectID/-other-router
  */
 router.use("/:projectId/ideas", ideaRouter);
+router.use("/:projectId/reviews", reviewRouter);
 
 // Routes
 router.route("/radius/:zipcode/:distance").get(getProjectsInRadius);
