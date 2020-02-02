@@ -10,6 +10,7 @@ dotenv.config({ path: "./config/config.env" });
 const Project = require("./models/Project");
 const Idea = require("./models/Idea");
 const User = require("./models/User");
+const Review = require("./models/Review");
 
 //Connect to DB
 mongoose.connect(process.env.MONGO_URI_LOCAL, {
@@ -40,12 +41,19 @@ const users = JSON.parse(
     "utf-8"
   )
 );
+const reviews = JSON.parse(
+  fs.readFileSync(
+    `${__dirname}/resources/devcamper_project_resources/_data/reviews.json`,
+    "utf-8"
+  )
+);
 // import into db
 const importData = async () => {
   try {
     await Project.create(projects);
     await Idea.create(ideas);
     await User.create(users);
+    await Review.create(reviews);
     console.log("Data Imported ....".green.inverse);
     process.exit();
   } catch (e) {
@@ -59,6 +67,7 @@ const deleteData = async () => {
     await Project.deleteMany();
     await Idea.deleteMany();
     await User.deleteMany();
+    await Review.deleteMany();
     console.log("Data Destroyed ....".red.inverse);
     process.exit();
   } catch (e) {
