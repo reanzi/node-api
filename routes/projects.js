@@ -10,7 +10,6 @@ const {
 } = require("../controllers/projects");
 
 const Project = require("../models/Project");
-const advancedResults = require("../middleware/advancedResults");
 
 /**
  *      Using Resources
@@ -21,6 +20,7 @@ const ideaRouter = require("./ideas");
 const router = express.Router();
 
 //Bring the protect Middleware
+const advancedResults = require("../middleware/advancedResults");
 const { protect, authorize } = require("../middleware/auth");
 /**
  * Re-route into other resource routers
