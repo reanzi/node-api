@@ -18,6 +18,7 @@ connectDB();
 const projects = require("./routes/projects");
 const ideas = require("./routes/ideas");
 const auth = require("./routes/auth");
+const users = require("./routes/users");
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/api/v1/projects", projects);
 app.use("/api/v1/ideas", ideas);
 app.use("/api/v1/auth", auth);
+app.use("/api/v1/users", users);
 
 app.use(errorHandler); // must be used after the target middleware {example project}
 

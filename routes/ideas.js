@@ -8,11 +8,11 @@ const {
 } = require("../controllers/ideas");
 
 const Idea = require("../models/Idea");
-const advancedResults = require("../middleware/advancedResults");
 
 const router = express.Router({ mergeParams: true });
 
 //Bring the protect Middleware
+const advancedResults = require("../middleware/advancedResults");
 const { protect, authorize } = require("../middleware/auth");
 
 router
