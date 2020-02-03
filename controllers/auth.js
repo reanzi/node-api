@@ -57,13 +57,34 @@ exports.login = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ *  @desc   Log user out / clear cookie
+ *  @route  GET /api/v1/auth/logout
+ *  @access private
+ */
+exports.logout = asyncHandler(async (req, res, next) => {
+  res.cookie("token", "none", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({
+    success: true,
+    data: "Logged out"
+  });
+  // next();
+});
+
+/**
  *  @desc   Get current logged in User
  *  @route  POST /api/v1/auth/me
  *  @access private
  */
 exports.getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
-
+  if (!user) {
+    return next(
+      new ErrorResponse("Your session is expired,Please Login again", 401)
+    );
+  }
   res.status(200).json({
     success: true,
     data: user
