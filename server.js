@@ -7,6 +7,9 @@ const fileupload = require("express-fileupload");
 const cookieParser = require("cookie-parser");
 const errorHandler = require("./middleware/error");
 const connectDB = require("./config/db");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
+const xss = require("xss-clean");
 
 // Load env variables
 dontenv.config({ path: "./config/config.env" });
@@ -34,6 +37,15 @@ app.use(cookieParser());
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+/**
+ *  SECURITY MIDDLEWARE/PACKAGES
+ */
+// Sanitize data
+app.use(mongoSanitize());
+// Set security headers
+app.use(helmet());
+// Prevent XSS attacks
+app.use(xss());
 
 // File Upload
 app.use(fileupload());
