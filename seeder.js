@@ -13,7 +13,7 @@ const User = require("./models/User");
 const Review = require("./models/Review");
 
 //Connect to DB
-mongoose.connect(process.env.MONGO_URI_LOCAL, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
